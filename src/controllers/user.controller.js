@@ -32,14 +32,14 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const avatarLocalPath = req.files?.avatar[0]?.path;
   const coverImageLocalPath = req.files?.coverImage[0]?.path;
-console.log(avatarLocalPath)
+  console.log(avatarLocalPath);
   if (!avatarLocalPath) {
     throw new ApiError(400, "avatar is required");
   }
 
   const avatar = await uploadOnClouldinary(avatarLocalPath);
   const coverImage = await uploadOnClouldinary(coverImageLocalPath);
-console.log('avatar', avatar)
+  console.log("avatar", avatar);
   if (!avatar) {
     throw new ApiError(400, "avatar is required66");
   }
@@ -60,10 +60,9 @@ console.log('avatar', avatar)
   if (!createdUser) {
     throw new ApiError(500, "something went wrong while registering the user");
   }
-  return res.status(201).json(
-    new ApiResponse(200, createdUser, "User registered Successfully")
-  )
-
+  return res
+    .status(201)
+    .json(new ApiResponse(200, createdUser, "User registered Successfully"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -130,6 +129,5 @@ const loginUser = asyncHandler(async (req, res) => {
       )
     );
 });
-
 
 export { registerUser, loginUser };
