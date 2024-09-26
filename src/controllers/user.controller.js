@@ -30,8 +30,10 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User with email and username already exist");
   }
 
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  const avatarLocalPath = req.files?.avatar[0]?.path || req.body.avatar;
+  const coverImageLocalPath =
+    req.files?.coverImage[0]?.path || req.body.coverImage;
+    
   console.log(avatarLocalPath);
   if (!avatarLocalPath) {
     throw new ApiError(400, "avatar is required");
@@ -194,4 +196,4 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser,refreshAccessToken };
+export { registerUser, loginUser, logoutUser, refreshAccessToken };
