@@ -69,7 +69,16 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  //TODO: update video details like title, description, thumbnail
+  //TODO: get video by id
+
+  const videos = await Video.findById(videoId);
+
+  if (!videos) {
+    throw new ApiError(200, "Video with this id does not exists");
+  }
+
+  console.log("videos", videos);
+  res.json({ status: 200, data: videos, message: "Success" });
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
@@ -125,13 +134,61 @@ const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 const getUserVideos = asyncHandler(async (req, res) => {
-  
+  const { userId } = req.params;
+  console.log("userId", userId);
+  if (!userId) {
+    throw new ApiError(400, "userId is missing");
+  }
+
+  const find = {
+    owner: userId,
+  };
+
+  const videos = await Video.find(find);
+  console.log("videos--", videos);
+  res.status(200).json(new ApiResponse(200, videos, "Success"));
 });
 
 
 
 const getChannelDataWithVideo = asyncHandler(async (req, res) => {
- 
+  const { sortBy, sortType, } = req.query;
+  const sort = {
+    [sortBy || "createdAt"]: sortType === "asc" ? 1 : -1, // Default sort by 'createdAt'
+  };
+  const result = await Video.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "uploader",
+      },
+    },
+    {
+      $project: {
+        // Use $project to exclude specific fields
+        "uploader.refreshToken": 0, // Exclude refreshToken
+        "uploader.password": 0, // Exclude password
+        // "uploader.coverImage": 0, // Exclude coverImage
+        "uploader.name": 0, // Exclude name
+        "uploader.email": 0, // Exclude email
+      },
+    },
+    {
+      $addFields: {
+        uploader: {
+          $first: "$uploader",
+        },
+      },
+    },
+    {
+      $sort: sort
+    }
+  ]);
+  
+  console.log(result);
+  res.json({status:200,message:"Success",data:result})
   
 });
 
