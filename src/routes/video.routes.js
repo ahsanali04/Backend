@@ -4,7 +4,11 @@ import {
   getAllVideos,
   getVideoById,
   publishAVideo,
+  togglePublishStatus,
   updateVideo,
+  getUserVideos,
+  getUserProfile,
+  getChannelDataWithVideo,
 } from "../controllers/video.contoller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -35,5 +39,10 @@ router
   .delete(deleteVideo)
   .patch(upload.single("thumbnail"), updateVideo);
 
+router.route("/user/:userId").get(getUserVideos);
+router.route("/user-profile/:userId").get(getUserProfile);
+router.route("/channel/detail").get(getChannelDataWithVideo);
+
+router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
 
 export default router;
